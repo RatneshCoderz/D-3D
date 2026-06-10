@@ -172,7 +172,7 @@
         </div>
         <div id="section-props" style="display:none;">
             <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🧱 Defence Wall</strong><br>100 HP barrier</div><div class="shop-item-buttons"><button class="btn" onclick="buyWall()">$100</button></div></div>
-            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>💣 Land Mine</strong><br>Instant kill blast radius</div><div class="shop-item-buttons"><button class="btn" onclick="buyMine()">$300</button></div></div>
+            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>💣 Land Mine</strong><br>Instant kill blast radius</div><div class="shop-item-buttons"><button class="btn" onclick="buyMine()">$30</button></div></div>
             <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🔫 Auto-Turret</strong><br>Shoots nearby enemies</div><div class="shop-item-buttons"><button class="btn" onclick="buyTurret()">$15000</button></div></div>
         </div>
     </div>
@@ -816,7 +816,7 @@ function buyFood() { if (money>=250) { money-=250; hunger=Math.min(100,hunger+40
 function buyWater() { if (money>=150) { money-=150; thirst=Math.min(100,thirst+40); updateHUD(); playSound('coin'); msg('+40% Thirst'); } else msg('Need $150'); }
 function buyBandages() { if (money>=750) { money-=750; bandages+=3; updateHUD(); playSound('coin'); msg('+3 Bandages'); } else msg('Need $750'); }
 function buyMagazine() { if (money>=350) { money-=350; spareMags++; updateHUD(); playSound('coin'); msg('+1 Spare Mag'); } else msg('Need $350'); }
-function buyMine() { if (money>=300) { money-=300; landMines++; updateHUD(); playSound('coin'); msg('+1 Land Mine'); } else msg('Need $300'); }
+function buyMine() { if (money>=30) { money-=30; landMines++; updateHUD(); playSound('coin'); msg('+1 Land Mine'); } else msg('Need $30'); }
 function buyWall() { if (money>=100) { money-=100; wallsCount++; updateHUD(); playSound('coin'); msg('Wall ready'); } else msg('Need $100'); }
 function buyTurret() { if (money>=15000) { money-=15000; turretsCount++; updateHUD(); playSound('coin'); msg('Turret ready'); } else msg('Need $15000'); }
 
