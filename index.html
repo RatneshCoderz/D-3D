@@ -86,7 +86,15 @@
         .kill-msg { font-size:8px; color:#4ade80; background:rgba(0,0,0,0.55); padding:4px 8px; border-left:3px solid #22c55e; animation:fadeOut 2.5s forwards; }
         @keyframes fadeOut { 0%{opacity:1} 70%{opacity:1} 100%{opacity:0} }
 
-        @media (max-width:768px) { #joystick-zone { display:block; } #global-leaderboard { display: none; } }
+        @media (max-width:768px), (pointer:coarse) { #joystick-zone { display:block; } #jump-btn { display:flex; } #global-leaderboard { display: none; } }
+
+        /* Hide on-foot HUD while driving, and vice-versa for car controls (toggled via .in-vehicle on #game-screen) */
+        #game-screen.in-vehicle #joystick-zone,
+        #game-screen.in-vehicle #jump-btn,
+        #game-screen.in-vehicle #action-buttons-container,
+        #game-screen.in-vehicle #enter-car-btn,
+        #game-screen.in-vehicle #cam-hint { display:none !important; }
+        #game-screen:not(.in-vehicle) #car-controls { display:none; }
 
         #minimap-wrap { position:absolute; top:80px; left:10px; z-index:30; pointer-events:none; }
         #minimap { border:3px solid #854d0e; border-radius:4px; box-shadow:0 0 0 2px #422006, 3px 3px 8px rgba(0,0,0,0.7); display:block; background:#0a1a0a; }
@@ -101,22 +109,9 @@
 
         #jump-btn { position:absolute; bottom:clamp(60px,12vh,90px); left:clamp(120px,32vw,160px); width:clamp(48px,13vw,62px); height:clamp(48px,13vw,62px); border-radius:50%; background:radial-gradient(circle at 38% 32%, #67e8f9, #0891b2); border:3px solid #164e63; color:#fff; font-size:clamp(18px,5vw,26px); display:none; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.5), inset -2px -2px 0 rgba(0,0,0,0.3); cursor:pointer; z-index:100; pointer-events:auto; transition:transform 0.08s; }
         #jump-btn:active { transform:scale(0.9); }
-        @media (max-width:768px) { #jump-btn { display:flex; } }
-
-        /* ── FORCE LANDSCAPE ON PHONE ── */
-        @media (max-width:900px) and (orientation:portrait) {
-            #game-screen {
-                width: 100vh;
-                height: 100vw;
-                transform: rotate(90deg) translateY(-100%);
-                transform-origin: top left;
-                top: 0;
-                left: 0;
-            }
-        }
 
         /* ── CAR CONTROLS ── */
-        #enter-car-btn { position:absolute; bottom:clamp(60px,12vh,90px); left:clamp(120px,32vw,160px); width:clamp(48px,13vw,62px); height:clamp(48px,13vw,62px); border-radius:50%; background:radial-gradient(circle at 38% 32%, #a3e635, #4d7c0f); border:3px solid #365314; color:#fff; font-size:clamp(18px,5vw,24px); display:none; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.5), inset -2px -2px 0 rgba(0,0,0,0.3); cursor:pointer; z-index:100; pointer-events:auto; }
+        #enter-car-btn { position:absolute; bottom:calc(clamp(60px,12vh,90px) + clamp(48px,13vw,62px) + 10px); left:clamp(120px,32vw,160px); width:clamp(48px,13vw,62px); height:clamp(48px,13vw,62px); border-radius:50%; background:radial-gradient(circle at 38% 32%, #a3e635, #4d7c0f); border:3px solid #365314; color:#fff; font-size:clamp(18px,5vw,24px); display:none; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.5), inset -2px -2px 0 rgba(0,0,0,0.3); cursor:pointer; z-index:100; pointer-events:auto; }
         #enter-car-btn.show { display:flex; }
         #enter-car-btn:active { transform:scale(0.9); }
 
@@ -211,29 +206,29 @@
             <button class="btn" id="tab-props" onclick="switchShopTab('props')" style="flex:1;padding:9px;">🧱 PROPS</button>
         </div>
         <div id="section-guns">
-            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🔫 UZI</strong><br>7 dmg · 32 mag · Very fast fire<br>Lvl <span id="uzi-lvl">0</span>/3 · $<span id="uzi-cost">400</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-uzi" onclick="buyGun('UZI')">BUY</button><button class="btn" id="btn-upgrade-uzi" onclick="upgradeGun('UZI')" style="display:none;">UPG</button></div></div>
-            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🔫 AK-47</strong><br>14 dmg · 40 mag · Reliable<br>Lvl <span id="ak47-lvl">0</span>/3 · $<span id="ak47-cost">1000</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-ak47" onclick="buyGun('AK47')">BUY</button><button class="btn" id="btn-upgrade-ak47" onclick="upgradeGun('AK47')" style="display:none;">UPG</button></div></div>
-            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🔫 M4A1</strong><br>18 dmg · 30 mag · Accurate<br>Lvl <span id="m4a1-lvl">0</span>/3 · $<span id="m4a1-cost">1750</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-m4a1" onclick="buyGun('M4A1')">BUY</button><button class="btn" id="btn-upgrade-m4a1" onclick="upgradeGun('M4A1')" style="display:none;">UPG</button></div></div>
-            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>💥 Shotgun</strong><br>22×5 dmg · 8 mag · Close range<br>Lvl <span id="shotgun-lvl">0</span>/3 · $<span id="shotgun-cost">2500</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-shotgun" onclick="buyGun('Shotgun')">BUY</button><button class="btn" id="btn-upgrade-shotgun" onclick="upgradeGun('Shotgun')" style="display:none;">UPG</button></div></div>
-            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>💥 Double Barrel</strong><br>35×2 dmg · 2 mag · Devastating<br>Lvl <span id="doublebarrel-lvl">0</span>/3 · $<span id="doublebarrel-cost">3500</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-doublebarrel" onclick="buyGun('DoubleBarrel')">BUY</button><button class="btn" id="btn-upgrade-doublebarrel" onclick="upgradeGun('DoubleBarrel')" style="display:none;">UPG</button></div></div>
-            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🎯 AWM Sniper</strong><br>60 dmg · 5 mag · Long range<br>Lvl <span id="awm-lvl">0</span>/3 · $<span id="awm-cost">4500</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-awm" onclick="buyGun('AWM')">BUY</button><button class="btn" id="btn-upgrade-awm" onclick="upgradeGun('AWM')" style="display:none;">UPG</button></div></div>
-            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🔥 LMG</strong><br>12 dmg · 100 mag · Never stops<br>Lvl <span id="lmg-lvl">0</span>/3 · $<span id="lmg-cost">5500</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-lmg" onclick="buyGun('LMG')">BUY</button><button class="btn" id="btn-upgrade-lmg" onclick="upgradeGun('LMG')" style="display:none;">UPG</button></div></div>
-            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🔥 Flamethrower</strong><br>9×3 streams · 60 mag · Burns<br>Lvl <span id="flamethrower-lvl">0</span>/3 · $<span id="flamethrower-cost">6000</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-flamethrower" onclick="buyGun('Flamethrower')">BUY</button><button class="btn" id="btn-upgrade-flamethrower" onclick="upgradeGun('Flamethrower')" style="display:none;">UPG</button></div></div>
-            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>💣 Grenade Launcher</strong><br>80 splash dmg · 6 mag · Big boom<br>Lvl <span id="grenadelauncher-lvl">0</span>/3 · $<span id="grenadelauncher-cost">9000</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-grenadelauncher" onclick="buyGun('GrenadeLauncher')">BUY</button><button class="btn" id="btn-upgrade-grenadelauncher" onclick="upgradeGun('GrenadeLauncher')" style="display:none;">UPG</button></div></div>
-            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>⚡ Laser Rifle</strong><br>45 dmg · 20 mag · Pierces armor<br>Lvl <span id="laserrifle-lvl">0</span>/3 · $<span id="laserrifle-cost">12500</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-laserrifle" onclick="buyGun('LaserRifle')">BUY</button><button class="btn" id="btn-upgrade-laserrifle" onclick="upgradeGun('LaserRifle')" style="display:none;">UPG</button></div></div>
-            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🌀 Air Defence</strong><br>10 dmg · 200 mag · Shreds<br>Lvl <span id="minigun-lvl">0</span>/3 · $<span id="minigun-cost">10000</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-minigun" onclick="buyGun('Minigun')">BUY</button><button class="btn" id="btn-upgrade-minigun" onclick="upgradeGun('Minigun')" style="display:none;">UPG</button></div></div>
-            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🚀 RPG</strong><br>120 splash dmg · 1 mag · Overkill<br>Lvl <span id="rpg-lvl">0</span>/3 · $<span id="rpg-cost">17500</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-rpg" onclick="buyGun('RPG')">BUY</button><button class="btn" id="btn-upgrade-rpg" onclick="upgradeGun('RPG')" style="display:none;">UPG</button></div></div>
+            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🔫 UZI</strong><br>7 dmg · 32 mag · Very fast fire<br>Lvl <span id="uzi-lvl">0</span>/3 · $<span id="uzi-cost">250</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-uzi" onclick="buyGun('UZI')">BUY</button><button class="btn" id="btn-upgrade-uzi" onclick="upgradeGun('UZI')" style="display:none;">UPG</button></div></div>
+            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🔫 AK-47</strong><br>14 dmg · 40 mag · Reliable<br>Lvl <span id="ak47-lvl">0</span>/3 · $<span id="ak47-cost">600</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-ak47" onclick="buyGun('AK47')">BUY</button><button class="btn" id="btn-upgrade-ak47" onclick="upgradeGun('AK47')" style="display:none;">UPG</button></div></div>
+            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🔫 M4A1</strong><br>18 dmg · 30 mag · Accurate<br>Lvl <span id="m4a1-lvl">0</span>/3 · $<span id="m4a1-cost">1000</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-m4a1" onclick="buyGun('M4A1')">BUY</button><button class="btn" id="btn-upgrade-m4a1" onclick="upgradeGun('M4A1')" style="display:none;">UPG</button></div></div>
+            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>💥 Shotgun</strong><br>22×5 dmg · 8 mag · Close range<br>Lvl <span id="shotgun-lvl">0</span>/3 · $<span id="shotgun-cost">1500</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-shotgun" onclick="buyGun('Shotgun')">BUY</button><button class="btn" id="btn-upgrade-shotgun" onclick="upgradeGun('Shotgun')" style="display:none;">UPG</button></div></div>
+            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>💥 Double Barrel</strong><br>35×2 dmg · 2 mag · Devastating<br>Lvl <span id="doublebarrel-lvl">0</span>/3 · $<span id="doublebarrel-cost">2000</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-doublebarrel" onclick="buyGun('DoubleBarrel')">BUY</button><button class="btn" id="btn-upgrade-doublebarrel" onclick="upgradeGun('DoubleBarrel')" style="display:none;">UPG</button></div></div>
+            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🎯 AWM Sniper</strong><br>60 dmg · 5 mag · Long range<br>Lvl <span id="awm-lvl">0</span>/3 · $<span id="awm-cost">2750</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-awm" onclick="buyGun('AWM')">BUY</button><button class="btn" id="btn-upgrade-awm" onclick="upgradeGun('AWM')" style="display:none;">UPG</button></div></div>
+            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🔥 LMG</strong><br>12 dmg · 100 mag · Never stops<br>Lvl <span id="lmg-lvl">0</span>/3 · $<span id="lmg-cost">3250</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-lmg" onclick="buyGun('LMG')">BUY</button><button class="btn" id="btn-upgrade-lmg" onclick="upgradeGun('LMG')" style="display:none;">UPG</button></div></div>
+            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🔥 Flamethrower</strong><br>9×3 streams · 60 mag · Burns<br>Lvl <span id="flamethrower-lvl">0</span>/3 · $<span id="flamethrower-cost">3500</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-flamethrower" onclick="buyGun('Flamethrower')">BUY</button><button class="btn" id="btn-upgrade-flamethrower" onclick="upgradeGun('Flamethrower')" style="display:none;">UPG</button></div></div>
+            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>💣 Grenade Launcher</strong><br>80 splash dmg · 6 mag · Big boom<br>Lvl <span id="grenadelauncher-lvl">0</span>/3 · $<span id="grenadelauncher-cost">5500</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-grenadelauncher" onclick="buyGun('GrenadeLauncher')">BUY</button><button class="btn" id="btn-upgrade-grenadelauncher" onclick="upgradeGun('GrenadeLauncher')" style="display:none;">UPG</button></div></div>
+            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>⚡ Laser Rifle</strong><br>45 dmg · 20 mag · Pierces armor<br>Lvl <span id="laserrifle-lvl">0</span>/3 · $<span id="laserrifle-cost">7500</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-laserrifle" onclick="buyGun('LaserRifle')">BUY</button><button class="btn" id="btn-upgrade-laserrifle" onclick="upgradeGun('LaserRifle')" style="display:none;">UPG</button></div></div>
+            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🌀 Air Defence</strong><br>10 dmg · 200 mag · Shreds<br>Lvl <span id="minigun-lvl">0</span>/3 · $<span id="minigun-cost">6000</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-minigun" onclick="buyGun('Minigun')">BUY</button><button class="btn" id="btn-upgrade-minigun" onclick="upgradeGun('Minigun')" style="display:none;">UPG</button></div></div>
+            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🚀 RPG</strong><br>120 splash dmg · 1 mag · Overkill<br>Lvl <span id="rpg-lvl">0</span>/3 · $<span id="rpg-cost">10500</span></div><div class="shop-item-buttons"><button class="btn" id="btn-buy-rpg" onclick="buyGun('RPG')">BUY</button><button class="btn" id="btn-upgrade-rpg" onclick="upgradeGun('RPG')" style="display:none;">UPG</button></div></div>
         </div>
         <div id="section-recovery" style="display:none;">
-            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🍗 Food Ration</strong><br>Restore 40% Hunger</div><div class="shop-item-buttons"><button class="btn" onclick="buyFood()">$250</button></div></div>
-            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>💧 Water Bottle</strong><br>Restore 40% Thirst</div><div class="shop-item-buttons"><button class="btn" onclick="buyWater()">$150</button></div></div>
-            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🩹 Bandage ×3</strong><br>Heal 2 HP each use</div><div class="shop-item-buttons"><button class="btn" onclick="buyBandages()">$750</button></div></div>
-            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>📦 Spare Mag</strong><br>+1 spare magazine</div><div class="shop-item-buttons"><button class="btn" onclick="buyMagazine()">$350</button></div></div>
+            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🍗 Food Ration</strong><br>Restore 40% Hunger</div><div class="shop-item-buttons"><button class="btn" onclick="buyFood()">$150</button></div></div>
+            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>💧 Water Bottle</strong><br>Restore 40% Thirst</div><div class="shop-item-buttons"><button class="btn" onclick="buyWater()">$100</button></div></div>
+            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🩹 Bandage ×3</strong><br>Heal 2 HP each use</div><div class="shop-item-buttons"><button class="btn" onclick="buyBandages()">$450</button></div></div>
+            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>📦 Spare Mag</strong><br>+1 spare magazine</div><div class="shop-item-buttons"><button class="btn" onclick="buyMagazine()">$200</button></div></div>
         </div>
         <div id="section-props" style="display:none;">
-            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🧱 Defence Wall</strong><br>100 HP barrier</div><div class="shop-item-buttons"><button class="btn" onclick="buyWall()">$100</button></div></div>
-            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>💣 Land Mine</strong><br>Instant kill blast radius</div><div class="shop-item-buttons"><button class="btn" onclick="buyMine()">$30</button></div></div>
-            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🔫 Auto-Turret</strong><br>Shoots nearby enemies</div><div class="shop-item-buttons"><button class="btn" onclick="buyTurret()">$15000</button></div></div>
+            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🧱 Defence Wall</strong><br>100 HP barrier</div><div class="shop-item-buttons"><button class="btn" onclick="buyWall()">$60</button></div></div>
+            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>💣 Land Mine</strong><br>Instant kill blast radius</div><div class="shop-item-buttons"><button class="btn" onclick="buyMine()">$20</button></div></div>
+            <div class="shop-item yellow-ui"><div class="shop-item-details"><strong>🔫 Auto-Turret</strong><br>Shoots nearby enemies</div><div class="shop-item-buttons"><button class="btn" onclick="buyTurret()">$9000</button></div></div>
         </div>
     </div>
 </div>
@@ -445,11 +440,9 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x5ba3d9);
 scene.fog = new THREE.FogExp2(0x9ec8e8, 0.0006); // Adjusted for smooth LOD streaming
 
-// On phones in portrait, the game-screen is CSS-rotated 90° into landscape,
-// so the renderer/camera must use swapped width/height to match.
+// Vertical/portrait layout — renderer just matches the viewport directly.
 function getViewSize() {
-    const forcedLandscape = window.matchMedia('(max-width:900px) and (orientation:portrait)').matches;
-    return forcedLandscape ? { w: innerHeight, h: innerWidth } : { w: innerWidth, h: innerHeight };
+    return { w: innerWidth, h: innerHeight };
 }
 
 const camera = new THREE.PerspectiveCamera(55, getViewSize().w / getViewSize().h, 0.5, 6000);
@@ -900,6 +893,73 @@ function resolveColliders(pos, radius, posY) {
     bld( 400, 670, 110,80,80,MAT.house1); bld( 700, 680,115,85,85,MAT.house3);
     bld(1000, 680, 120,85,80,MAT.house4); bld(1280, 680,110,80,75,MAT.house2);
 
+    // ═══════════════════════════════════════════════════════
+    //  SCATTERED OBSTACLES — crates, barrels, rocks, cones, barriers
+    // ═══════════════════════════════════════════════════════
+    MAT.crate   = new THREE.MeshStandardMaterial({color:0x9c6b35, roughness:0.95});
+    MAT.barrel  = new THREE.MeshStandardMaterial({color:0x4a5568, roughness:0.6, metalness:0.4});
+    MAT.barrelR = new THREE.MeshStandardMaterial({color:0x8b4513, roughness:0.8, metalness:0.2});
+    MAT.rock    = new THREE.MeshStandardMaterial({color:0x6b6b6b, roughness:1.0});
+    MAT.cone    = new THREE.MeshStandardMaterial({color:0xff6b1a, roughness:0.7});
+    MAT.barrier = new THREE.MeshStandardMaterial({color:0xe2e2e2, roughness:0.85});
+
+    function crate(x,z){ place(x,0,z, 14,14,14, MAT.crate); }
+    function barrelObs(x,z,rusty){
+        const m = new THREE.Mesh(new THREE.CylinderGeometry(7,7,18,12), rusty?MAT.barrelR:MAT.barrel);
+        m.position.set(x,9,z); m.castShadow=true; m.receiveShadow=true; scene.add(m);
+        globalColliders.push({x,z,hw:7,hd:7,h:18});
+    }
+    function rock(x,z,s=14){
+        const m = new THREE.Mesh(new THREE.DodecahedronGeometry(s,0), MAT.rock);
+        m.position.set(x, s*0.5, z); m.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, 0);
+        m.castShadow=true; m.receiveShadow=true; scene.add(m);
+        globalColliders.push({x,z,hw:s*0.8,hd:s*0.8,h:s});
+    }
+    function cone(x,z){
+        const m = new THREE.Mesh(new THREE.ConeGeometry(4,10,8), MAT.cone);
+        m.position.set(x,5,z); m.castShadow=true; scene.add(m);
+        globalColliders.push({x,z,hw:4,hd:4,h:10}); // short — jumpable
+    }
+    function barrier(x,z,rotY=0){
+        const m=new THREE.Mesh(GEO1, MAT.barrier);
+        m.scale.set(40,10,4); m.position.set(x,5,z); m.rotation.y=rotY;
+        m.castShadow=true; m.receiveShadow=true; scene.add(m);
+        const hw = Math.abs(Math.cos(rotY))*20 + Math.abs(Math.sin(rotY))*2;
+        const hd = Math.abs(Math.sin(rotY))*20 + Math.abs(Math.cos(rotY))*2;
+        globalColliders.push({x,z,hw,hd,h:10});
+    }
+
+    // Crates piled near the chowk and market lanes
+    crate(80,40); crate(96,40); crate(80,56);
+    crate(-200,120); crate(-184,120); crate(-200,136);
+    crate(720,-260); crate(736,-260); crate(720,-244);
+    crate(-450,-680); crate(-434,-680);
+
+    // Barrels along the mill / industrial road
+    barrelObs(1050,-10); barrelObs(1066,-10,true); barrelObs(1050,8,true);
+    barrelObs(-520,40); barrelObs(-504,40,true);
+    barrelObs(420,250); barrelObs(436,250,true);
+    barrelObs(900,600); barrelObs(916,600,true);
+
+    // Rocks scattered across the open maidan & outskirts
+    rock(560,-460,16); rock(820,-380,20); rock(980,-450,14);
+    rock(-350,300,18); rock(-420,260,15);
+    rock(1180,300,17); rock(1250,260,14);
+    rock(-550,-500,16); rock(1400,-300,18);
+
+    // Traffic cones marking hazards / lane edges
+    cone(40,-50); cone(60,-50); cone(80,-50);
+    cone(310,180); cone(330,180);
+    cone(-60,-260); cone(-40,-260);
+    cone(870,-540); cone(890,-540); cone(910,-540);
+
+    // Concrete barriers blocking a few shortcuts
+    barrier(450,-40, Math.PI/2);
+    barrier(-250,0, Math.PI/2);
+    barrier(800,360);
+    barrier(1150,-180, Math.PI/2);
+    barrier(-100,470);
+
 })();
 
 // stubs — no chunk streaming needed
@@ -1162,24 +1222,65 @@ const carTailMat  = new THREE.MeshStandardMaterial({ color:0xdc2626, emissive:0x
 function createCar(x, z, color, rotY) {
     const group = new THREE.Group();
     const bodyMat = new THREE.MeshStandardMaterial({ color, roughness:0.35, metalness:0.55 });
+    const darkMat = new THREE.MeshStandardMaterial({ color:0x1c1c1c, roughness:0.8, metalness:0.2 });
 
-    const body = new THREE.Mesh(new THREE.BoxGeometry(30, 14, 56), bodyMat);
-    body.position.y = 11; body.castShadow = true; body.receiveShadow = true; group.add(body);
+    // Lower chassis — full-length base/skirt
+    const chassis = new THREE.Mesh(new THREE.BoxGeometry(29, 8, 56), bodyMat);
+    chassis.position.y = 8; chassis.castShadow = true; chassis.receiveShadow = true; group.add(chassis);
 
-    const cabin = new THREE.Mesh(new THREE.BoxGeometry(26, 12, 28), carGlassMat);
+    // Hood — front end, sits lower than the cabin roofline
+    const hood = new THREE.Mesh(new THREE.BoxGeometry(27, 5, 18), bodyMat);
+    hood.position.set(0, 13.5, 20); hood.castShadow = true; group.add(hood);
+
+    // Trunk — rear end
+    const trunk = new THREE.Mesh(new THREE.BoxGeometry(27, 4, 13), bodyMat);
+    trunk.position.set(0, 13, -22); trunk.castShadow = true; group.add(trunk);
+
+    // Cabin / greenhouse glass
+    const cabin = new THREE.Mesh(new THREE.BoxGeometry(24, 10, 24), carGlassMat);
     cabin.position.set(0, 21, -3); cabin.castShadow = true; group.add(cabin);
 
-    const bumperF = new THREE.Mesh(new THREE.BoxGeometry(31, 6, 4), bodyMat);
-    bumperF.position.set(0, 6, 27); group.add(bumperF);
-    const bumperR = new THREE.Mesh(new THREE.BoxGeometry(31, 6, 4), bodyMat);
-    bumperR.position.set(0, 6, -27); group.add(bumperR);
+    // Roof
+    const roof = new THREE.Mesh(new THREE.BoxGeometry(24, 2, 20), bodyMat);
+    roof.position.set(0, 27, -3); roof.castShadow = true; group.add(roof);
+
+    // Windshield (sloped, hood → roof)
+    const windshield = new THREE.Mesh(new THREE.BoxGeometry(23, 10, 1.5), carGlassMat);
+    windshield.position.set(0, 19, 9.5); windshield.rotation.x = -0.5; group.add(windshield);
+
+    // Rear windshield (roof → trunk)
+    const rearGlass = new THREE.Mesh(new THREE.BoxGeometry(23, 9, 1.5), carGlassMat);
+    rearGlass.position.set(0, 18.5, -15.5); rearGlass.rotation.x = 0.45; group.add(rearGlass);
+
+    // Side mirrors
+    [-1,1].forEach(side => {
+        const mirror = new THREE.Mesh(new THREE.BoxGeometry(1.5, 2, 4), bodyMat);
+        mirror.position.set(side*15.5, 18, 9); group.add(mirror);
+    });
+
+    // Wheel arches
+    [[-14,5,19],[14,5,19],[-14,5,-19],[14,5,-19]].forEach(([wx,wy,wz]) => {
+        const arch = new THREE.Mesh(new THREE.BoxGeometry(3, 11, 15), darkMat);
+        arch.position.set(wx, wy, wz); group.add(arch);
+    });
+
+    // Bumpers
+    const bumperF = new THREE.Mesh(new THREE.BoxGeometry(30, 6, 4), darkMat);
+    bumperF.position.set(0, 6, 28); group.add(bumperF);
+    const bumperR = new THREE.Mesh(new THREE.BoxGeometry(30, 6, 4), darkMat);
+    bumperR.position.set(0, 6, -28); group.add(bumperR);
 
     // Headlights & taillights
+    const headlights = [], taillights = [];
     [[-11,9,28.5],[11,9,28.5]].forEach(([lx,ly,lz]) => {
         const l = new THREE.Mesh(new THREE.BoxGeometry(5,3,1), carLightMat); l.position.set(lx,ly,lz); group.add(l);
+        const pl = new THREE.PointLight(0xfff8dc, 0.9, 140, 2); pl.position.set(lx, ly, lz+6); group.add(pl);
+        headlights.push(pl);
     });
     [[-11,9,-28.5],[11,9,-28.5]].forEach(([lx,ly,lz]) => {
-        const l = new THREE.Mesh(new THREE.BoxGeometry(5,3,1), carTailMat); l.position.set(lx,ly,lz); group.add(l);
+        const l = new THREE.Mesh(new THREE.BoxGeometry(5,3,1), carTailMat.clone()); l.position.set(lx,ly,lz); group.add(l);
+        const pl = new THREE.PointLight(0xff2222, 0.5, 50, 2); pl.position.set(lx, ly, lz-3); group.add(pl);
+        taillights.push({ light: pl, mesh: l });
     });
 
     // Wheels
@@ -1192,7 +1293,7 @@ function createCar(x, z, color, rotY) {
 
     group.position.set(x, 0, z); group.rotation.y = rotY || 0;
     scene.add(group);
-    return { group, wheels, body, speed: 0, spawn: { x, z, rotY: rotY||0 } };
+    return { group, wheels, body: chassis, headlights, taillights, speed: 0, spawn: { x, z, rotY: rotY||0 } };
 }
 
 function spawnCars() {
@@ -1230,7 +1331,10 @@ function enterVehicle() {
     playerGroup.visible = false;
     document.getElementById('enter-car-btn').classList.remove('show');
     document.getElementById('car-controls').classList.add('show');
-    document.getElementById('jump-btn').style.display = 'none';
+    document.getElementById('game-screen').classList.add('in-vehicle');
+    // Reset on-foot joystick so a held touch doesn't get stuck "active" while hidden
+    joyActive = false; joyTouchId = null; joyX = 0; joyY = 0;
+    joyKnob.style.transform = 'translate(-50%,-50%)';
     playSound('reload');
 }
 
@@ -1245,6 +1349,7 @@ function exitVehicle() {
     car.speed = 0; car.group.rotation.z = 0;
     isInVehicle = false; currentVehicle = null;
     document.getElementById('car-controls').classList.remove('show');
+    document.getElementById('game-screen').classList.remove('in-vehicle');
 }
 
 function updateVehicle(dt) {
@@ -1257,6 +1362,13 @@ function updateVehicle(dt) {
     if (keys['d']||keys['arrowright']||carInput.right)  steer -= 1;
 
     // — Drivetrain: engine / brake / reverse, or rolling resistance when coasting —
+    const isBraking = (throttle < 0 && car.speed > 5) || (throttle > 0 && car.speed < -5);
+    car.taillights.forEach(t => {
+        const targetEmissive = isBraking ? 2.2 : 0.8;
+        const targetIntensity = isBraking ? 2.5 : 0.5;
+        t.mesh.material.emissiveIntensity += (targetEmissive - t.mesh.material.emissiveIntensity) * Math.min(1, dt*10);
+        t.light.intensity += (targetIntensity - t.light.intensity) * Math.min(1, dt*10);
+    });
     if (throttle > 0) {
         car.speed += P.ACCEL * dt;
     } else if (throttle < 0) {
@@ -1331,18 +1443,18 @@ let wallsCount = 0, turretsCount = 0, bandages = 0, bombPrice = 100, landMines =
 // Economy Rebalance
 const gunStats = {
     Pistol: { owned:true, level:0, baseDamage:5, baseCost:0, fireRate:500, magSize:12, reloadTime:1000, color:0xfacc15 },
-    UZI: { owned:false, level:0, baseDamage:7, baseCost:400, fireRate:100, magSize:32, reloadTime:1200, color:0xa3a3a3 },
-    AK47: { owned:false, level:0, baseDamage:14, baseCost:1000, fireRate:180, magSize:40, reloadTime:1800, color:0xfacc15 },
-    M4A1: { owned:false, level:0, baseDamage:18, baseCost:1750, fireRate:140, magSize:30, reloadTime:1600, color:0x60a5fa },
-    Shotgun: { owned:false, level:0, baseDamage:22, baseCost:2500, fireRate:850, magSize:8, reloadTime:2200, color:0xfbbf24 },
-    DoubleBarrel: { owned:false, level:0, baseDamage:35, baseCost:3500, fireRate:1200, magSize:2, reloadTime:1800, color:0xf59e0b },
-    AWM: { owned:false, level:0, baseDamage:60, baseCost:4500, fireRate:1800, magSize:5, reloadTime:2800, color:0x34d399 },
-    LMG: { owned:false, level:0, baseDamage:12, baseCost:5500, fireRate:90, magSize:100, reloadTime:3500, color:0xfb923c },
-    Flamethrower: { owned:false, level:0, baseDamage:9, baseCost:6000, fireRate:70, magSize:60, reloadTime:2800, color:0xff6600 },
-    GrenadeLauncher:{ owned:false,level:0, baseDamage:80, baseCost:9000, fireRate:1500, magSize:6, reloadTime:2500, color:0x84cc16 },
-    LaserRifle: { owned:false, level:0, baseDamage:45, baseCost:12500, fireRate:300, magSize:20, reloadTime:2000, color:0x818cf8 },
-    Minigun: { owned:false, level:0, baseDamage:10, baseCost:10000, fireRate:55, magSize:200, reloadTime:4000, color:0xf87171 },
-    RPG: { owned:false, level:0, baseDamage:120, baseCost:17500, fireRate:2800, magSize:1, reloadTime:3200, color:0xdc2626 }
+    UZI: { owned:false, level:0, baseDamage:7, baseCost:250, fireRate:100, magSize:32, reloadTime:1200, color:0xa3a3a3 },
+    AK47: { owned:false, level:0, baseDamage:14, baseCost:600, fireRate:180, magSize:40, reloadTime:1800, color:0xfacc15 },
+    M4A1: { owned:false, level:0, baseDamage:18, baseCost:1000, fireRate:140, magSize:30, reloadTime:1600, color:0x60a5fa },
+    Shotgun: { owned:false, level:0, baseDamage:22, baseCost:1500, fireRate:850, magSize:8, reloadTime:2200, color:0xfbbf24 },
+    DoubleBarrel: { owned:false, level:0, baseDamage:35, baseCost:2000, fireRate:1200, magSize:2, reloadTime:1800, color:0xf59e0b },
+    AWM: { owned:false, level:0, baseDamage:60, baseCost:2750, fireRate:1800, magSize:5, reloadTime:2800, color:0x34d399 },
+    LMG: { owned:false, level:0, baseDamage:12, baseCost:3250, fireRate:90, magSize:100, reloadTime:3500, color:0xfb923c },
+    Flamethrower: { owned:false, level:0, baseDamage:9, baseCost:3500, fireRate:70, magSize:60, reloadTime:2800, color:0xff6600 },
+    GrenadeLauncher:{ owned:false,level:0, baseDamage:80, baseCost:5500, fireRate:1500, magSize:6, reloadTime:2500, color:0x84cc16 },
+    LaserRifle: { owned:false, level:0, baseDamage:45, baseCost:7500, fireRate:300, magSize:20, reloadTime:2000, color:0x818cf8 },
+    Minigun: { owned:false, level:0, baseDamage:10, baseCost:6000, fireRate:55, magSize:200, reloadTime:4000, color:0xf87171 },
+    RPG: { owned:false, level:0, baseDamage:120, baseCost:10500, fireRate:2800, magSize:1, reloadTime:3200, color:0xdc2626 }
 };
 
 let enemies = [], bullets = [], drops = [], props = [], explosions = [];
@@ -1393,13 +1505,13 @@ function updateShopUI() { Object.keys(gunStats).forEach(name => { const g = gunS
 function msg(s) { document.getElementById('shop-message').innerText = s; }
 function buyGun(name) { const g = gunStats[name]; if (g.owned) { currentGun=name; currentAmmo=g.magSize; isReloading=false; msg('Equipped '+name); updateShopUI(); updateHUD(); } else if (money>=g.baseCost) { money-=g.baseCost; g.owned=true; currentGun=name; currentAmmo=g.magSize; isReloading=false; updateHUD(); updateShopUI(); msg('Purchased '+name+'!'); playSound('coin'); } else msg('Need $'+g.baseCost); }
 function upgradeGun(name) { const g=gunStats[name]; if (!g.owned||g.level>=3) return; const cost=g.baseCost*(g.level+1); if (money>=cost) { money-=cost; g.level++; updateHUD(); updateShopUI(); msg(name+' upgraded to Lvl '+g.level+'!'); playSound('coin'); } else msg('Need $'+cost); }
-function buyFood() { if (money>=250) { money-=250; hunger=Math.min(100,hunger+40); updateHUD(); playSound('coin'); msg('+40% Hunger'); } else msg('Need $250'); }
-function buyWater() { if (money>=150) { money-=150; thirst=Math.min(100,thirst+40); updateHUD(); playSound('coin'); msg('+40% Thirst'); } else msg('Need $150'); }
-function buyBandages() { if (money>=750) { money-=750; bandages+=3; updateHUD(); playSound('coin'); msg('+3 Bandages'); } else msg('Need $750'); }
-function buyMagazine() { if (money>=350) { money-=350; spareMags++; updateHUD(); playSound('coin'); msg('+1 Spare Mag'); } else msg('Need $350'); }
-function buyMine() { if (money>=30) { money-=30; landMines++; updateHUD(); playSound('coin'); msg('+1 Land Mine'); } else msg('Need $30'); }
-function buyWall() { if (money>=100) { money-=100; wallsCount++; updateHUD(); playSound('coin'); msg('Wall ready'); } else msg('Need $100'); }
-function buyTurret() { if (money>=15000) { money-=15000; turretsCount++; updateHUD(); playSound('coin'); msg('Turret ready'); } else msg('Need $15000'); }
+function buyFood() { if (money>=150) { money-=150; hunger=Math.min(100,hunger+40); updateHUD(); playSound('coin'); msg('+40% Hunger'); } else msg('Need $150'); }
+function buyWater() { if (money>=100) { money-=100; thirst=Math.min(100,thirst+40); updateHUD(); playSound('coin'); msg('+40% Thirst'); } else msg('Need $100'); }
+function buyBandages() { if (money>=450) { money-=450; bandages+=3; updateHUD(); playSound('coin'); msg('+3 Bandages'); } else msg('Need $450'); }
+function buyMagazine() { if (money>=200) { money-=200; spareMags++; updateHUD(); playSound('coin'); msg('+1 Spare Mag'); } else msg('Need $200'); }
+function buyMine() { if (money>=20) { money-=20; landMines++; updateHUD(); playSound('coin'); msg('+1 Land Mine'); } else msg('Need $20'); }
+function buyWall() { if (money>=60) { money-=60; wallsCount++; updateHUD(); playSound('coin'); msg('Wall ready'); } else msg('Need $60'); }
+function buyTurret() { if (money>=9000) { money-=9000; turretsCount++; updateHUD(); playSound('coin'); msg('Turret ready'); } else msg('Need $9000'); }
 
 function useBandage() { if (bandages > 0 && playerHp < maxHp) { bandages--; playerHp = Math.min(maxHp, playerHp+2); updateHUD(); playSound('coin'); } }
 function quickPlaceMine() { if (landMines <= 0) { addKillMsg('💣 No mines! Buy from Shop'); return; } placeProp('mine'); }
@@ -1510,10 +1622,14 @@ function spawnEnemy() {
     enemies.push({ group:eGrp, hp:maxHpEnemy, maxHp:maxHpEnemy, speed: isBoss ? 0.9 : Math.min(2.2, 1.3 + timeLived*0.006), isBoss, scale:sc, lArm:eParts.lArm, rArm:eParts.rArm, lLeg:eParts.lLeg, rLeg:eParts.rLeg, hbSprite, hbTex, phase: Math.random() * Math.PI * 2, lastAttack: 0 });
 }
 function refreshHB(e) { e.hbTex.image = makeHBCanvas(Math.max(0, e.hp/e.maxHp), e.isBoss); e.hbTex.needsUpdate = true; }
-function spawnExplosion(x,y,z,color,count) {
+function spawnExplosion(x,y,z,color,count,kind) {
+    const isDust = kind === 'dust';
     for (let i=0;i<count;i++) {
-        const p = new THREE.Mesh(new THREE.BoxGeometry(4,4,4), new THREE.MeshBasicMaterial({ color })); p.position.set(x,y,z);
-        p.userData = { vx:(Math.random()-0.5)*20, vy:Math.random()*20+4, vz:(Math.random()-0.5)*20, life:25+Math.random()*20 };
+        const size = isDust ? 1.5 : 4;
+        const p = new THREE.Mesh(new THREE.BoxGeometry(size,size,size), new THREE.MeshBasicMaterial({ color, transparent:isDust, opacity:isDust?0.55:1 })); p.position.set(x,y,z);
+        p.userData = isDust
+            ? { vx:(Math.random()-0.5)*6, vy:Math.random()*4+1, vz:(Math.random()-0.5)*6, life:14+Math.random()*8 }
+            : { vx:(Math.random()-0.5)*20, vy:Math.random()*20+4, vz:(Math.random()-0.5)*20, life:25+Math.random()*20 };
         scene.add(p); explosions.push({ mesh:p, isParticle:true });
     }
 }
@@ -1683,8 +1799,8 @@ function animate(timestamp = 0) {
             // Landing impact
             landingImpact = Math.min(Math.abs(velY) / PHYS.JUMP_FORCE, 1.0);
             camShake = landingImpact * 10;
-            if (landingImpact > 0.55) {
-                spawnExplosion(playerGroup.position.x, 2, playerGroup.position.z, 0xc4a35a, Math.floor(landingImpact*12));
+            if (landingImpact > 0.65) {
+                spawnExplosion(playerGroup.position.x, 1, playerGroup.position.z, 0xc4a35a, Math.floor(landingImpact*6), 'dust');
             }
         }
         playerGroup.position.y = 0;
